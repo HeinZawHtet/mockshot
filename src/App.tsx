@@ -92,11 +92,12 @@ export default function App() {
   }, [platform, colorMode])
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden">
+    <div className="flex flex-col h-dvh w-screen overflow-hidden">
 
       {/* Mobile top bar */}
       <div
-        className={`md:hidden shrink-0 flex items-center justify-between px-3 py-2 border-b ${colorMode === 'dark' ? 'border-white/10' : 'border-black/10'}`}
+        className={`md:hidden shrink-0 flex items-center justify-between px-3 border-b ${colorMode === 'dark' ? 'border-white/10' : 'border-black/10'}`}
+        style={{ paddingTop: 'max(8px, env(safe-area-inset-top))', paddingBottom: '8px' }}
         style={{ backgroundColor: theme.chatBg }}
       >
         <div className="flex items-center gap-2">
@@ -249,7 +250,7 @@ export default function App() {
             </div>
 
             {/* Compose bar — not exported */}
-            <div className="shrink-0 px-3 pt-2.5 pb-3">
+            <div className="shrink-0 px-3 pt-2.5" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
               {/* Sender role toggle */}
               <div className="flex gap-1.5 mb-2">
                 {(['them', 'me'] as const).map(role => (
