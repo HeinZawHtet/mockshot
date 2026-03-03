@@ -97,8 +97,7 @@ export default function App() {
       {/* Mobile top bar */}
       <div
         className={`md:hidden shrink-0 flex items-center justify-between px-3 border-b ${colorMode === 'dark' ? 'border-white/10' : 'border-black/10'}`}
-        style={{ paddingTop: 'max(8px, env(safe-area-inset-top))', paddingBottom: '8px' }}
-        style={{ backgroundColor: theme.chatBg }}
+        style={{ paddingTop: 'max(8px, env(safe-area-inset-top))', paddingBottom: '8px', backgroundColor: theme.chatBg }}
       >
         <div className="flex items-center gap-2">
           <div
