@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import type { Message } from './types/message'
 import type { Platform, ColorMode } from './types/theme'
 import { iMessageDark, iMessageLight } from './themes/imessage'
@@ -15,6 +16,30 @@ import logoSvg from './assets/logo.svg'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 
 const PLATFORMS: Platform[] = ['imessage', 'whatsapp', 'messenger']
+
+const PLATFORM_META: Record<Platform, { title: string; description: string; canonical: string }> = {
+  imessage: {
+    title: 'iMessage Screenshot Generator — MockShot',
+    description: 'Create realistic fake iMessage screenshots instantly. Customize conversations with dark/light mode and export as PNG. Free to use.',
+    canonical: 'https://mockshot.io/imessage',
+  },
+  whatsapp: {
+    title: 'WhatsApp Screenshot Generator — MockShot',
+    description: 'Generate fake WhatsApp chat screenshots for free. Set sender, receiver, and timestamps. Export as high-quality PNG instantly.',
+    canonical: 'https://mockshot.io/whatsapp',
+  },
+  messenger: {
+    title: 'Facebook Messenger Screenshot Generator — MockShot',
+    description: 'Create fake Facebook Messenger chat screenshots online. Customize names, avatars, and reactions. Free PNG export.',
+    canonical: 'https://mockshot.io/messenger',
+  },
+}
+
+function pathToPlatform(pathname: string): Platform {
+  if (pathname.startsWith('/whatsapp')) return 'whatsapp'
+  if (pathname.startsWith('/messenger')) return 'messenger'
+  return 'imessage'
+}
 const PLATFORM_LABELS: Record<Platform, string> = {
   imessage: 'iMessage',
   whatsapp: 'WhatsApp',
@@ -38,7 +63,9 @@ function getTheme(platform: Platform, colorMode: ColorMode) {
 }
 
 export default function App() {
-  const [platform, setPlatform] = useState<Platform>('imessage')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [platform, setPlatform] = useState<Platform>(() => pathToPlatform(location.pathname))
   const [colorMode, setColorMode] = useState<ColorMode>('dark')
   const [contactName, setContactName] = useState('Alice')
   const [inputText, setInputText] = useState('')
@@ -122,6 +149,17 @@ export default function App() {
     e.target.value = ''
   }, [])
 
+  const handleSetPlatform = useCallback((p: Platform) => {
+    setPlatform(p)
+    navigate(`/${p}`, { replace: true })
+  }, [navigate])
+
+  useEffect(() => {
+    document.title = PLATFORM_META[platform].title
+    const metaDesc = document.querySelector('meta[name="description"]')
+    if (metaDesc) metaDesc.setAttribute('content', PLATFORM_META[platform].description)
+  }, [platform])
+
   // Revoke previous object URLs on unmount (data URLs don't need it, but good practice)
   useEffect(() => () => { if (avatarUrl?.startsWith('blob:')) URL.revokeObjectURL(avatarUrl) }, [avatarUrl])
 
@@ -189,7 +227,7 @@ export default function App() {
                   <Button
                     key={p}
                     variant="custom"
-                    onClick={() => setPlatform(p)}
+                    onClick={() => handleSetPlatform(p)}
                     className={`flex flex-col items-center gap-0.5 w-14 h-auto py-2 rounded-lg transition-all duration-150 ${!isActive ? (colorMode === 'dark' ? 'text-white/60' : 'text-black/55') : ''}`}
                     style={isActive ? { color: (p === 'whatsapp' && colorMode === 'light') ? '#065f46' : pColor, backgroundColor: `${pColor}18` } : undefined}
                   >
@@ -201,6 +239,8 @@ export default function App() {
             </div>
 
             {/* Top tools */}
+
+
             <span className={`text-[9px] tracking-tight font-bold uppercase mb-1 ${colorMode === 'dark' ? 'text-white/40' : 'text-black/40'}`}>
               Setting
             </span>
@@ -379,7 +419,7 @@ export default function App() {
                   return (
                     <button
                       key={p}
-                      onClick={() => setPlatform(p)}
+                      onClick={() => handleSetPlatform(p)}
                       className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border transition-all"
                       style={isActive
                         ? { borderColor: pColor, backgroundColor: `${pColor}12`, color: pColor }
@@ -431,7 +471,7 @@ export default function App() {
           <DrawerHeader>
             <DrawerTitle>Recipient</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-8 flex flex-col gap-4">
+          <div className="px-4 pb-8 flex flex-col gap-4 w-full max-w-sm mx-auto">
             {/* Avatar preview + upload */}
             <div className="flex flex-col items-center gap-2">
               <button

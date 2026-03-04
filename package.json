@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite-react-ssg build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -16,9 +16,12 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-helmet-async": "^3.0.0",
+    "react-router-dom": "^6.30.3",
     "remixicon": "^4.9.1",
     "tailwind-merge": "^3.5.0",
-    "vaul": "^1.1.2"
+    "vaul": "^1.1.2",
+    "vite-react-ssg": "^0.9.1-beta.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
