@@ -5,4 +5,5 @@ export interface Message {
   text: string
   sender: SenderRole
   timestamp: string // ISO string
+  reactions?: string[]
 }

@@ -3,6 +3,8 @@ import type { ChatTheme } from '../types/theme'
 import type { Message } from '../types/message'
 import { formatTime, getInitials, getAvatarColor, getTimeValue, applyTimeToTimestamp } from '../utils/helpers'
 
+const REACTION_EMOJIS = ['❤️', '😂', '😮', '😢', '👍', '👎']
+
 interface ChatBubbleProps {
   message: Message
   theme: ChatTheme
@@ -14,6 +16,7 @@ interface ChatBubbleProps {
   onDelete?: () => void
   onEdit?: (newText: string) => void
   onEditTimestamp?: (newTimestamp: string) => void
+  onReact?: (emoji: string) => void
 }
 
 function TickIcon({ blue }: { blue?: boolean }) {
@@ -54,16 +57,21 @@ export function ChatBubble({
   onDelete,
   onEdit,
   onEditTimestamp,
+  onReact,
 }: ChatBubbleProps) {
   const [hovered, setHovered] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(message.text)
   const [isEditingTimestamp, setIsEditingTimestamp] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const isSent = message.sender === 'me'
+  const isDark = theme.colorMode === 'dark'
   const bubbleBg = isSent ? theme.bubble.sentBg : theme.bubble.receivedBg
   const textColor = isSent ? theme.bubble.sentText : theme.bubble.receivedText
+  const hasReactions = (message.reactions?.length ?? 0) > 0
 
   let borderRadius: string
   if (isSent) {
@@ -74,18 +82,29 @@ export function ChatBubble({
 
   const avatarSlotWidth = theme.avatar.size + 14
 
-  // Sync editText if message.text changes externally
   useEffect(() => {
     if (!isEditing) setEditText(message.text)
   }, [message.text, isEditing])
 
-  // Focus textarea when editing starts
   useEffect(() => {
     if (isEditing) {
       textareaRef.current?.focus()
       textareaRef.current?.select()
     }
   }, [isEditing])
+
+  // Close picker on outside pointer event
+  useEffect(() => {
+    if (!showPicker) return
+    function handlePointerDown(e: PointerEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowPicker(false)
+        setHovered(false)
+      }
+    }
+    document.addEventListener('pointerdown', handlePointerDown)
+    return () => document.removeEventListener('pointerdown', handlePointerDown)
+  }, [showPicker])
 
   function handleEditSave() {
     const trimmed = editText.trim()
@@ -99,18 +118,22 @@ export function ChatBubble({
     if (e.key === 'Escape') { setEditText(message.text); setIsEditing(false) }
   }
 
-  const showActions = (onEdit || onDelete) && hovered && !isEditing
+  const showActions = (onEdit || onDelete || onReact) && (hovered || showPicker) && !isEditing
 
   return (
     <div
+      ref={containerRef}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { if (!showPicker) setHovered(false) }}
+      onTouchStart={() => setHovered(true)}
       style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: isSent ? 'flex-end' : 'flex-start',
         paddingLeft: isSent ? '60px' : `${avatarSlotWidth}px`,
         paddingRight: isSent ? '8px' : `${avatarSlotWidth}px`,
+        paddingTop: hasReactions && theme.platform === 'imessage' ? '36px' : undefined,
+        paddingBottom: hasReactions && (theme.platform === 'messenger' || theme.platform === 'whatsapp') ? '14px' : undefined,
         position: 'relative',
       }}
     >
@@ -134,6 +157,53 @@ export function ChatBubble({
           }}
         >
           {showAvatar ? getInitials(contactName) : ''}
+        </div>
+      )}
+
+      {/* Emoji picker popup — appears above bubble */}
+      {showPicker && onReact && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            transform: 'translateY(calc(-100% - 4px))',
+            ...(isSent ? { right: '8px' } : { left: `${avatarSlotWidth}px` }),
+            display: 'flex',
+            gap: '2px',
+            background: isDark ? '#2C2C2E' : '#FFFFFF',
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+            borderRadius: '999px',
+            padding: '4px 6px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+            zIndex: 10,
+          }}
+        >
+          {REACTION_EMOJIS.map(emoji => {
+            const isActive = message.reactions?.includes(emoji)
+            return (
+              <button
+                key={emoji}
+                onPointerDown={e => { e.stopPropagation(); onReact(emoji); setShowPicker(false) }}
+                style={{
+                  background: isActive
+                    ? (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)')
+                    : 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  lineHeight: 1,
+                  padding: '3px 4px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label={`React with ${emoji}`}
+              >
+                {emoji}
+              </button>
+            )
+          })}
         </div>
       )}
 
@@ -230,6 +300,139 @@ export function ChatBubble({
             {isSent && <TickIcon blue={readReceiptLabel === 'Read'} />}
           </span>
         )}
+
+        {/* WhatsApp reactions — absolute at bottom corner, horizontally inside bubble */}
+        {hasReactions && theme.platform === 'whatsapp' && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '-20px',
+              ...(isSent ? { right: '8px' } : { left: '8px' }),
+              display: 'flex',
+              gap: '4px',
+              zIndex: 1,
+            }}
+          >
+            {message.reactions!.map(emoji => (
+              <span
+                key={emoji}
+                onClick={() => onReact?.(emoji)}
+                style={{
+                  background: isDark ? '#1F2C33' : '#FFFFFF',
+                  border: `1.5px solid ${theme.chatBg}`,
+                  borderRadius: '999px',
+                  padding: '2px 8px',
+                  fontSize: '12px',
+                  lineHeight: '18px',
+                  cursor: onReact ? 'pointer' : 'default',
+                  boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.15)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                  color: isDark ? '#8696A0' : '#54656F',
+                  fontFamily: theme.fontFamily,
+                }}
+              >
+                <span>{emoji}</span>
+                <span style={{ fontSize: '11px' }}>1</span>
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* iMessage tapback — speech bubble above the bubble corner */}
+        {hasReactions && theme.platform === 'imessage' && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '100%',
+              marginBottom: '-4px',
+              ...(isSent ? { left: '6px' } : { right: '-10px' }),
+              display: 'flex',
+              gap: '4px',
+              zIndex: 2,
+            }}
+          >
+            {message.reactions!.map(emoji => {
+              const tapBg = isSent ? (isDark ? '#3A3A3C' : '#E9E9EB') : '#2B7EFB'
+              return (
+                <div
+                  key={emoji}
+                  onClick={() => onReact?.(emoji)}
+                  style={{ position: 'relative', width: '28px', flexShrink: 0, cursor: onReact ? 'pointer' : 'default' }}
+                >
+                  {/* Main circle */}
+                  <div style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    background: tapBg,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '15px',
+                  }}>
+                    {emoji}
+                  </div>
+                  {/* Tail dot 1 — medium */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '-5px',
+                    ...(isSent ? { left: '1px' } : { right: '1px' }),
+                    width: '9px',
+                    height: '9px',
+                    borderRadius: '50%',
+                    background: tapBg,
+                  }} />
+                  {/* Tail dot 2 — small */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '-10px',
+                    ...(isSent ? { left: '-3px' } : { right: '-3px' }),
+                    width: '5px',
+                    height: '5px',
+                    borderRadius: '50%',
+                    background: tapBg,
+                  }} />
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Messenger reactions — absolute at bottom-right corner of bubble */}
+        {hasReactions && theme.platform === 'messenger' && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '-18px',
+              right: '-4px',
+              display: 'flex',
+              gap: '2px',
+              zIndex: 1,
+            }}
+          >
+            {message.reactions!.map(emoji => (
+              <span
+                key={emoji}
+                onClick={() => onReact?.(emoji)}
+                style={{
+                  background: isDark ? '#3A3A3C' : '#F0F0F0',
+                  border: `2px solid ${theme.chatBg}`,
+                  borderRadius: '999px',
+                  padding: '2px 7px',
+                  fontSize: '13px',
+                  lineHeight: '18px',
+                  cursor: onReact ? 'pointer' : 'default',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                }}
+              >
+                {emoji}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* iMessage read receipt */}
@@ -247,7 +450,7 @@ export function ChatBubble({
         </span>
       )}
 
-      {/* Hover actions: edit + delete */}
+      {/* Hover actions: react + edit + delete */}
       {showActions && (
         <div
           style={{
@@ -260,6 +463,28 @@ export function ChatBubble({
             gap: '3px',
           }}
         >
+          {onReact && (
+            <button
+              onPointerDown={e => { e.stopPropagation(); setShowPicker(p => !p) }}
+              style={{
+                background: showPicker ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.35)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '22px',
+                height: '22px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#fff',
+                fontSize: '11px',
+                flexShrink: 0,
+              }}
+              aria-label="React to message"
+            >
+              <i className="ri-emotion-line" />
+            </button>
+          )}
           {onEdit && (
             <button
               onClick={() => setIsEditing(true)}

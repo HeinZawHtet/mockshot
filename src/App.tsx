@@ -11,6 +11,7 @@ import { generateId } from './utils/helpers'
 import { getSeedMessages } from './data/seed-messages'
 import { exportAsPng, preloadExport } from './utils/export'
 import { Button } from '@/components/ui/button'
+import logoSvg from './assets/logo.svg'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 
 const PLATFORMS: Platform[] = ['imessage', 'whatsapp', 'messenger']
@@ -78,6 +79,19 @@ export default function App() {
     setMessages(prev => prev.map(m => m.id === id ? { ...m, timestamp: newTimestamp } : m))
   }, [])
 
+  const handleToggleReaction = useCallback((id: string, emoji: string) => {
+    setMessages(prev => prev.map(m => {
+      if (m.id !== id) return m
+      const reactions = m.reactions ?? []
+      return {
+        ...m,
+        reactions: reactions.includes(emoji)
+          ? reactions.filter(r => r !== emoji)
+          : [...reactions, emoji],
+      }
+    }))
+  }, [])
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -104,7 +118,7 @@ export default function App() {
             className="w-7 h-7 rounded-lg flex items-center justify-center"
             style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)` }}
           >
-            <i className="ri-screenshot-2-line text-white text-sm" aria-hidden="true" />
+            <img src={logoSvg} alt="" aria-hidden="true" className="w-4 h-4 object-contain" />
           </div>
           <span className={`text-base font-bold tracking-tight ${colorMode === 'dark' ? 'text-white' : 'text-slate-900'}`}>
             MockShot
@@ -227,7 +241,7 @@ export default function App() {
                 className="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300"
                 style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)` }}
               >
-                <i className="ri-screenshot-2-line text-white text-sm" aria-hidden="true" />
+                <img src={logoSvg} alt="" aria-hidden="true" className="w-4 h-4 object-contain" />
               </div>
               <span className={`text-base font-bold tracking-tight ${colorMode === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                 Mock Shot
@@ -238,13 +252,13 @@ export default function App() {
             {/* Exportable conversation */}
             <div id="phone-frame" className="flex-1 overflow-hidden" style={{ backgroundColor: theme.chatBg }}>
               {platform === 'imessage' && (
-                <IMessageChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} />
+                <IMessageChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} />
               )}
               {platform === 'whatsapp' && (
-                <WhatsAppChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} />
+                <WhatsAppChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} />
               )}
               {platform === 'messenger' && (
-                <MessengerChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} />
+                <MessengerChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} />
               )}
             </div>
 
@@ -310,9 +324,6 @@ export default function App() {
                 </Button>
               </div>
             </div>
-
-
-
           </div>
         </div>
       </main>

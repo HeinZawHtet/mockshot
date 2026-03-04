@@ -11,9 +11,10 @@ interface IMessageChatProps {
   onDeleteMessage?: (id: string) => void
   onEditMessage?: (id: string, newText: string) => void
   onEditTimestamp?: (id: string, newTimestamp: string) => void
+  onReact?: (messageId: string, emoji: string) => void
 }
 
-export function IMessageChat({ messages, theme, contactName, onDeleteMessage, onEditMessage, onEditTimestamp }: IMessageChatProps) {
+export function IMessageChat({ messages, theme, contactName, onDeleteMessage, onEditMessage, onEditTimestamp, onReact }: IMessageChatProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [editingTimestampId, setEditingTimestampId] = useState<string | null>(null)
 
@@ -117,6 +118,7 @@ export function IMessageChat({ messages, theme, contactName, onDeleteMessage, on
                   onDelete={onDeleteMessage ? () => onDeleteMessage(msg.id) : undefined}
                   onEdit={onEditMessage ? (newText) => onEditMessage(msg.id, newText) : undefined}
                   onEditTimestamp={onEditTimestamp ? (ts) => onEditTimestamp(msg.id, ts) : undefined}
+                  onReact={onReact ? (emoji) => onReact(msg.id, emoji) : undefined}
                 />
               </div>
             </div>
