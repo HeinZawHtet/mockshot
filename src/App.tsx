@@ -73,6 +73,10 @@ export default function App() {
     setMessages(prev => prev.filter(m => m.id !== id))
   }, [])
 
+  const handleClearMessages = useCallback(() => {
+    setMessages([])
+  }, [])
+
   const handleEditMessage = useCallback((id: string, newText: string) => {
     setMessages(prev => prev.map(m => m.id === id ? { ...m, text: newText } : m))
   }, [])
@@ -281,7 +285,7 @@ export default function App() {
             {/* Compose bar — not exported */}
             <div className="shrink-0 px-3 pt-2.5" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
               {/* Sender role toggle */}
-              <div className="flex gap-1.5 mb-2">
+              <div className="flex gap-1.5 mb-2 items-center">
                 {(['them', 'me'] as const).map(role => (
                   <Button
                     key={role}
@@ -305,6 +309,20 @@ export default function App() {
                     {role === 'them' ? 'Received' : 'Sent'}
                   </Button>
                 ))}
+                <Button
+                  variant="custom"
+                  onClick={handleClearMessages}
+                  disabled={messages.length === 0}
+                  className={`ml-auto px-3 py-1 h-auto rounded-lg text-xs font-semibold border transition-colors ${
+                    messages.length === 0
+                      ? colorMode === 'dark' ? 'border-white/15 text-white/25' : 'border-black/10 text-black/25'
+                      : colorMode === 'dark' ? 'border-red-500/40 text-red-400 hover:bg-red-500/10' : 'border-red-400/40 text-red-500 hover:bg-red-50'
+                  }`}
+                  aria-label="Clear all messages"
+                >
+                  <i className="ri-delete-bin-line" aria-hidden="true" />
+                  Clear
+                </Button>
               </div>
 
               {/* Input + send */}
