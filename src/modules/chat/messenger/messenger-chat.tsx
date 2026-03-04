@@ -12,9 +12,11 @@ interface MessengerChatProps {
   onEditMessage?: (id: string, newText: string) => void
   onEditTimestamp?: (id: string, newTimestamp: string) => void
   onReact?: (messageId: string, emoji: string) => void
+  onAvatarClick?: () => void
+  avatarUrl?: string
 }
 
-export function MessengerChat({ messages, theme, contactName, onDeleteMessage, onEditMessage, onEditTimestamp, onReact }: MessengerChatProps) {
+export function MessengerChat({ messages, theme, contactName, onDeleteMessage, onEditMessage, onEditTimestamp, onReact, onAvatarClick, avatarUrl }: MessengerChatProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [editingTimestampId, setEditingTimestampId] = useState<string | null>(null)
 
@@ -119,6 +121,8 @@ export function MessengerChat({ messages, theme, contactName, onDeleteMessage, o
                   onEdit={onEditMessage ? (newText) => onEditMessage(msg.id, newText) : undefined}
                   onEditTimestamp={onEditTimestamp ? (ts) => onEditTimestamp(msg.id, ts) : undefined}
                   onReact={onReact ? (emoji) => onReact(msg.id, emoji) : undefined}
+                  onAvatarClick={onAvatarClick}
+                  avatarUrl={avatarUrl}
                 />
               </div>
             </div>

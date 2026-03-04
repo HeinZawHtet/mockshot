@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import type { Message } from './types/message'
 import type { Platform, ColorMode } from './types/theme'
 import { iMessageDark, iMessageLight } from './themes/imessage'
@@ -7,7 +7,7 @@ import { messengerLight, messengerDark } from './themes/messenger'
 import { IMessageChat } from './modules/chat/imessage/imessage-chat'
 import { WhatsAppChat } from './modules/chat/whatsapp/whatsapp-chat'
 import { MessengerChat } from './modules/chat/messenger/messenger-chat'
-import { generateId } from './utils/helpers'
+import { generateId, getAvatarColor, getInitials } from './utils/helpers'
 import { getSeedMessages } from './data/seed-messages'
 import { exportAsPng, preloadExport } from './utils/export'
 import { Button } from '@/components/ui/button'
@@ -46,6 +46,8 @@ export default function App() {
   const [isExporting, setIsExporting] = useState(false)
   const [contactDrawerOpen, setContactDrawerOpen] = useState(false)
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [messages, setMessages] = useState<Message[]>(getSeedMessages)
 
@@ -104,6 +106,20 @@ export default function App() {
     await exportAsPng('phone-frame', `mockshot-${platform}-${colorMode}`)
     setIsExporting(false)
   }, [platform, colorMode])
+
+  const handleAvatarFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = ev => {
+      if (typeof ev.target?.result === 'string') setAvatarUrl(ev.target.result)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }, [])
+
+  // Revoke previous object URLs on unmount (data URLs don't need it, but good practice)
+  useEffect(() => () => { if (avatarUrl?.startsWith('blob:')) URL.revokeObjectURL(avatarUrl) }, [avatarUrl])
 
   return (
     <div className="flex flex-col h-dvh w-screen overflow-hidden">
@@ -252,13 +268,13 @@ export default function App() {
             {/* Exportable conversation */}
             <div id="phone-frame" className="flex-1 overflow-hidden" style={{ backgroundColor: theme.chatBg }}>
               {platform === 'imessage' && (
-                <IMessageChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} />
+                <IMessageChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} onAvatarClick={() => setContactDrawerOpen(true)} avatarUrl={avatarUrl ?? undefined} />
               )}
               {platform === 'whatsapp' && (
-                <WhatsAppChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} />
+                <WhatsAppChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} onAvatarClick={() => setContactDrawerOpen(true)} avatarUrl={avatarUrl ?? undefined} />
               )}
               {platform === 'messenger' && (
-                <MessengerChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} />
+                <MessengerChat messages={messages} theme={theme} contactName={contactName} onDeleteMessage={handleDeleteMessage} onEditMessage={handleEditMessage} onEditTimestamp={handleEditTimestamp} onReact={handleToggleReaction} onAvatarClick={() => setContactDrawerOpen(true)} avatarUrl={avatarUrl ?? undefined} />
               )}
             </div>
 
@@ -395,9 +411,61 @@ export default function App() {
       <Drawer open={contactDrawerOpen} onOpenChange={setContactDrawerOpen}>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle>Recipient's Name</DrawerTitle>
+            <DrawerTitle>Recipient</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-8 flex flex-col gap-3">
+          <div className="px-4 pb-8 flex flex-col gap-4">
+            {/* Avatar preview + upload */}
+            <div className="flex flex-col items-center gap-2">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="relative group focus:outline-none"
+                aria-label="Upload profile photo"
+              >
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden text-white text-2xl font-bold select-none"
+                  style={{ backgroundColor: avatarUrl ? 'transparent' : getAvatarColor(contactName) }}
+                >
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={contactName} className="w-full h-full object-cover" />
+                  ) : (
+                    getInitials(contactName)
+                  )}
+                </div>
+                <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                  <i className="ri-camera-line text-white text-xl" aria-hidden="true" />
+                </div>
+              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-xs font-medium text-black/50 hover:text-black/70 transition-colors"
+                >
+                  Upload photo
+                </button>
+                {avatarUrl && (
+                  <>
+                    <span className="text-black/20">·</span>
+                    <button
+                      type="button"
+                      onClick={() => setAvatarUrl(null)}
+                      className="text-xs font-medium text-red-400 hover:text-red-500 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarFileChange}
+              />
+            </div>
+            {/* Name input */}
             <input
               type="text"
               value={contactName}

@@ -17,6 +17,8 @@ interface ChatBubbleProps {
   onEdit?: (newText: string) => void
   onEditTimestamp?: (newTimestamp: string) => void
   onReact?: (emoji: string) => void
+  onAvatarClick?: () => void
+  avatarUrl?: string
 }
 
 function TickIcon({ blue }: { blue?: boolean }) {
@@ -58,6 +60,8 @@ export function ChatBubble({
   onEdit,
   onEditTimestamp,
   onReact,
+  onAvatarClick,
+  avatarUrl,
 }: ChatBubbleProps) {
   const [hovered, setHovered] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -147,16 +151,27 @@ export function ChatBubble({
             width: `${theme.avatar.size}px`,
             height: `${theme.avatar.size}px`,
             borderRadius: '50%',
-            backgroundColor: showAvatar ? getAvatarColor(contactName) : 'transparent',
+            backgroundColor: showAvatar ? (avatarUrl ? 'transparent' : getAvatarColor(contactName)) : 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: `${Math.floor(theme.avatar.size * 0.38)}px`,
             color: '#FFFFFF',
             fontWeight: 600,
+            cursor: showAvatar && onAvatarClick ? 'pointer' : 'default',
+            overflow: 'hidden',
           }}
+          onClick={showAvatar && onAvatarClick ? onAvatarClick : undefined}
         >
-          {showAvatar ? getInitials(contactName) : ''}
+          {showAvatar ? (
+            avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={contactName}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            ) : getInitials(contactName)
+          ) : ''}
         </div>
       )}
 
