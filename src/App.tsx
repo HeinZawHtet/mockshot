@@ -175,10 +175,15 @@ export default function App() {
   }, [navigate])
 
   useEffect(() => {
-    document.title = PLATFORM_META[platform].title
+    const isRoot = location.pathname === '/' || location.pathname === ''
+    const title = isRoot ? 'MockShot — Fake Chat Screenshot Generator' : PLATFORM_META[platform].title
+    const desc = isRoot
+      ? 'Create realistic fake iMessage, WhatsApp, and Messenger screenshots instantly. Free, no sign-up required.'
+      : PLATFORM_META[platform].description
+    document.title = title
     const metaDesc = document.querySelector('meta[name="description"]')
-    if (metaDesc) metaDesc.setAttribute('content', PLATFORM_META[platform].description)
-  }, [platform])
+    if (metaDesc) metaDesc.setAttribute('content', desc)
+  }, [platform, location.pathname])
 
   // Revoke previous object URLs on unmount (data URLs don't need it, but good practice)
   useEffect(() => () => { if (avatarUrl?.startsWith('blob:')) URL.revokeObjectURL(avatarUrl) }, [avatarUrl])
@@ -204,6 +209,15 @@ export default function App() {
           </span>
         </div>
         <div className="flex items-center gap-1.5">
+          <Button
+            variant="custom"
+            onClick={() => setAiDrawerOpen(true)}
+            aria-label="Generate conversation"
+            className="size-10 rounded-xl"
+            style={{ color: accentTextColor }}
+          >
+            <i className="ri-sparkling-2-line text-xl" aria-hidden="true" />
+          </Button>
           <Button
             variant="custom"
             onClick={() => setMobileSettingsOpen(true)}

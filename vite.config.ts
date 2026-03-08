@@ -6,8 +6,8 @@ import type { } from 'vite-react-ssg'
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'iMessage Screenshot Generator — MockShot',
-    description: 'Create realistic fake iMessage screenshots instantly. Customize conversations with dark/light mode and export as PNG. Free to use.',
+    title: 'MockShot — Fake Chat Screenshot Generator',
+    description: 'Create realistic fake iMessage, WhatsApp, and Messenger screenshots instantly. Free, no sign-up required.',
   },
   '/imessage': {
     title: 'iMessage Screenshot Generator — MockShot',
