@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 
+const accentColor = '#2B7EFB'
+
 const FEATURES = [
   {
     icon: 'ri-focus-3-line',
@@ -39,7 +41,7 @@ const PLATFORMS = [
     color: '#25D366',
     href: '/whatsapp',
     cta: 'Try WhatsApp Generator',
-    description: 'Double-tick delivery indicators, timestamps inside bubbles, and the signature dark green color scheme. The world\'s most-used messaging app, faithfully replicated.',
+    description: "Double-tick delivery indicators, timestamps inside bubbles, and the signature dark green color scheme. The world's most-used messaging app, faithfully replicated.",
     tags: ['Dark Mode', 'Light Mode', 'Tick Receipts', 'Timestamps'],
   },
   {
@@ -109,7 +111,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'Can I use a real profile photo for the contact?',
-    a: 'Yes. Tap the avatar in the Recipient settings to upload any image as the contact\'s profile picture. It appears in all received message bubbles.',
+    a: "Yes. Tap the avatar in the Recipient settings to upload any image as the contact's profile picture. It appears in all received message bubbles.",
   },
   {
     q: 'Is my data safe and private?',
@@ -121,39 +123,28 @@ const FAQS: { q: string; a: string }[] = [
   },
 ]
 
-interface Props {
-  accentColor: string
-  background: string
-  colorMode: 'dark' | 'light'
-}
-
-export function HomeLanding({ accentColor, background, colorMode }: Props) {
-  const isDark = colorMode === 'dark'
-
-  const txt = isDark ? 'text-white' : 'text-slate-900'
-  const sub = isDark ? 'text-white/40' : 'text-black/45'
-  const label = isDark ? 'text-white/30' : 'text-black/35'
-  const border = isDark ? 'border-white/[0.08]' : 'border-black/[0.08]'
-  const cardHover = isDark ? 'hover:border-white/15 hover:bg-white/[0.04]' : 'hover:border-black/15 hover:bg-black/[0.03]'
-  const stepNum = isDark ? 'text-white/[0.07]' : 'text-black/[0.06]'
-  const iconBorder = isDark ? 'border-white/[0.08]' : 'border-black/[0.08]'
-  const tagStyle = isDark ? 'border-white/[0.08] text-white/25' : 'border-black/[0.08] text-black/30'
-  const sectionBorder = isDark ? 'border-white/[0.08]' : 'border-black/[0.08]'
-  const footerText = isDark ? 'text-white/20' : 'text-black/20'
-
+export default function AboutPage() {
   return (
-    <div style={{ fontFamily: 'Syne, sans-serif', backgroundColor: background }}>
+    <div style={{ fontFamily: 'Syne, sans-serif', backgroundColor: '#FFFFFF' }}>
+
+      {/* Top nav */}
+      <div className="max-w-5xl mx-auto px-6 pt-6">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-slate-900 transition-colors">
+          <i className="ri-arrow-left-line text-base" aria-hidden />
+          Back to app
+        </Link>
+      </div>
 
       {/* Intro */}
-      <section className={`border-b ${sectionBorder}`}>
+      <section className="border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 pt-20 pb-16">
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-5 ${label}`}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-5 text-slate-400">
             Free Fake Chat Screenshot Generator
           </p>
-          <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight mb-6 max-w-3xl ${txt}`}>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight mb-6 max-w-3xl text-slate-900">
             Create Realistic Fake Chat Screenshots — Free & Instant
           </h2>
-          <p className={`text-base md:text-lg max-w-2xl leading-relaxed ${sub}`}>
+          <p className="text-base md:text-lg max-w-2xl leading-relaxed text-slate-500">
             MockShot lets you generate pixel-perfect fake iMessage, WhatsApp, and Messenger screenshots directly in your browser.
             No sign-up required, no watermarks, no limits. Type your messages and export a high-quality PNG in seconds.
           </p>
@@ -161,18 +152,18 @@ export function HomeLanding({ accentColor, background, colorMode }: Props) {
       </section>
 
       {/* Features */}
-      <section className={`border-b ${sectionBorder}`}>
+      <section className="border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-10 ${label}`}>Why MockShot</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-10 text-slate-400">Why MockShot</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {FEATURES.map(f => (
               <div
                 key={f.title}
-                className={`border rounded-2xl p-6 transition-all duration-200 ${border} ${cardHover}`}
+                className="border border-slate-100 rounded-2xl p-6 transition-all duration-200 hover:border-slate-200 hover:bg-slate-50"
               >
                 <i className={`${f.icon} text-xl mb-4 block`} aria-hidden style={{ color: accentColor }} />
-                <h3 className={`text-sm font-bold mb-2 ${txt}`}>{f.title}</h3>
-                <p className={`text-sm leading-relaxed ${sub}`}>{f.description}</p>
+                <h3 className="text-sm font-bold mb-2 text-slate-900">{f.title}</h3>
+                <p className="text-sm leading-relaxed text-slate-500">{f.description}</p>
               </div>
             ))}
           </div>
@@ -180,15 +171,15 @@ export function HomeLanding({ accentColor, background, colorMode }: Props) {
       </section>
 
       {/* Platforms */}
-      <section className={`border-b ${sectionBorder}`}>
+      <section className="border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-10 ${label}`}>Supported Platforms</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-10 text-slate-400">Supported Platforms</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {PLATFORMS.map(p => (
               <Link
                 key={p.name}
                 to={p.href}
-                className={`group flex flex-col gap-4 border rounded-2xl p-6 transition-all duration-200 ${border} ${cardHover}`}
+                className="group flex flex-col gap-4 border border-slate-100 rounded-2xl p-6 transition-all duration-200 hover:border-slate-200 hover:bg-slate-50"
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -197,14 +188,14 @@ export function HomeLanding({ accentColor, background, colorMode }: Props) {
                   >
                     <i className={`${p.icon} text-base`} style={{ color: p.color }} aria-hidden />
                   </div>
-                  <h3 className={`font-bold text-sm ${txt}`}>{p.name}</h3>
+                  <h3 className="font-bold text-sm text-slate-900">{p.name}</h3>
                 </div>
-                <p className={`text-sm leading-relaxed flex-1 ${sub}`}>{p.description}</p>
+                <p className="text-sm leading-relaxed flex-1 text-slate-500">{p.description}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {p.tags.map(tag => (
                     <span
                       key={tag}
-                      className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tagStyle}`}
+                      className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-slate-100 text-slate-400"
                     >
                       {tag}
                     </span>
@@ -220,18 +211,18 @@ export function HomeLanding({ accentColor, background, colorMode }: Props) {
       </section>
 
       {/* Use cases */}
-      <section className={`border-b ${sectionBorder}`}>
+      <section className="border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-10 ${label}`}>Who Uses MockShot</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-10 text-slate-400">Who Uses MockShot</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             {USE_CASES.map(u => (
               <div key={u.title} className="flex gap-4">
-                <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${iconBorder}`}>
+                <div className="w-9 h-9 rounded-xl border border-slate-100 flex items-center justify-center shrink-0 mt-0.5">
                   <i className={`${u.icon} text-sm`} aria-hidden style={{ color: accentColor }} />
                 </div>
                 <div>
-                  <h3 className={`font-bold text-sm mb-1.5 ${txt}`}>{u.title}</h3>
-                  <p className={`text-sm leading-relaxed ${sub}`}>{u.description}</p>
+                  <h3 className="font-bold text-sm mb-1.5 text-slate-900">{u.title}</h3>
+                  <p className="text-sm leading-relaxed text-slate-500">{u.description}</p>
                 </div>
               </div>
             ))}
@@ -240,15 +231,15 @@ export function HomeLanding({ accentColor, background, colorMode }: Props) {
       </section>
 
       {/* How it works */}
-      <section className={`border-b ${sectionBorder}`}>
+      <section className="border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-10 ${label}`}>How It Works</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-10 text-slate-400">How It Works</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {STEPS.map(s => (
               <div key={s.n} className="flex flex-col gap-3">
-                <span className={`text-5xl font-bold leading-none tabular-nums ${stepNum}`}>{s.n}</span>
-                <h3 className={`font-bold text-sm ${txt}`}>{s.title}</h3>
-                <p className={`text-sm leading-relaxed ${sub}`}>{s.desc}</p>
+                <span className="text-5xl font-bold leading-none tabular-nums text-slate-200">{s.n}</span>
+                <h3 className="font-bold text-sm text-slate-900">{s.title}</h3>
+                <p className="text-sm leading-relaxed text-slate-500">{s.desc}</p>
               </div>
             ))}
           </div>
@@ -256,16 +247,16 @@ export function HomeLanding({ accentColor, background, colorMode }: Props) {
       </section>
 
       {/* FAQ */}
-      <section className={`border-b ${sectionBorder}`}>
+      <section className="border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-10 ${label}`}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-10 text-slate-400">
             Frequently Asked Questions
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
             {FAQS.map(f => (
               <div key={f.q}>
-                <h3 className={`font-bold text-sm mb-2 ${txt}`}>{f.q}</h3>
-                <p className={`text-sm leading-relaxed ${sub}`}>{f.a}</p>
+                <h3 className="font-bold text-sm mb-2 text-slate-900">{f.q}</h3>
+                <p className="text-sm leading-relaxed text-slate-500">{f.a}</p>
               </div>
             ))}
           </div>
@@ -274,8 +265,8 @@ export function HomeLanding({ accentColor, background, colorMode }: Props) {
 
       {/* Footer */}
       <footer className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between gap-4">
-        <span className={`text-sm font-bold ${txt}`}>MockShot</span>
-        <p className={`text-xs ${footerText}`}>Free fake chat screenshot generator. No sign-up required.</p>
+        <span className="text-sm font-bold text-slate-900">MockShot</span>
+        <p className="text-xs text-slate-300">Free fake chat screenshot generator. No sign-up required.</p>
       </footer>
 
     </div>

@@ -21,6 +21,10 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
     title: 'Facebook Messenger Screenshot Generator — MockShot',
     description: 'Create fake Facebook Messenger chat screenshots online. Customize names, avatars, and reactions. Free PNG export.',
   },
+  '/about': {
+    title: 'About MockShot — Free Fake Chat Screenshot Generator',
+    description: 'Learn about MockShot, the free tool to generate realistic fake iMessage, WhatsApp, and Messenger screenshots instantly.',
+  },
 }
 
 export default defineConfig({
@@ -30,7 +34,7 @@ export default defineConfig({
   },
   ssgOptions: {
     dirStyle: 'nested',
-    includedRoutes: () => ['/', '/imessage', '/whatsapp', '/messenger'],
+    includedRoutes: () => ['/', '/imessage', '/whatsapp', '/messenger', '/about'],
     onBeforePageRender: (route, indexHTML) => {
       const meta = PAGE_META[route]
       if (!meta) return indexHTML

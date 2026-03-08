@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 import type { Message } from './types/message'
 import type { Platform, ColorMode } from './types/theme'
 import { iMessageDark, iMessageLight } from './themes/imessage'
@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import logoSvg from './assets/logo.svg'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { HomeLanding } from '@/components/home-landing'
 import { AiGenerateDrawer } from '@/components/ai-generate-drawer'
 import type { GeneratedMessage } from '@/types/ai'
 
@@ -596,7 +595,9 @@ export default function App() {
         </DrawerContent>
       </Drawer>
     </div>
-    <HomeLanding accentColor={accentColor} background={theme.chatBg} colorMode={colorMode} />
+    <Button variant="link" size="sm" className={`fixed top-4 right-4 z-50 ${colorMode === 'dark' ? 'text-white/50 hover:text-white' : 'text-black/40 hover:text-black'}`} asChild>
+      <Link to="/about">About</Link>
+    </Button>
     <AiGenerateDrawer
       open={aiDrawerOpen}
       onOpenChange={setAiDrawerOpen}
