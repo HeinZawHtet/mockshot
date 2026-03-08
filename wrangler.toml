@@ -4,4 +4,4 @@ pages_build_output_dir = "dist"
 
 [[kv_namespaces]]
 binding = "RATE_KV"
-id = "e977891adead461cbf45542b7520ec1c"
+id = "f69b28cbcf9c41d2843266a987d6cbc4"
