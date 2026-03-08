@@ -1,0 +1,7 @@
+name = "mockshot"
+compatibility_date = "2024-11-01"
+pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "RATE_KV"
+id = "e977891adead461cbf45542b7520ec1c"

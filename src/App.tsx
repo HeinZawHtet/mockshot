@@ -14,6 +14,9 @@ import { exportAsPng, preloadExport } from './utils/export'
 import { Button } from '@/components/ui/button'
 import logoSvg from './assets/logo.svg'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { HomeLanding } from '@/components/home-landing'
+import { AiGenerateDrawer } from '@/components/ai-generate-drawer'
+import type { GeneratedMessage } from '@/types/ai'
 
 const PLATFORMS: Platform[] = ['imessage', 'whatsapp', 'messenger']
 
@@ -73,6 +76,7 @@ export default function App() {
   const [isExporting, setIsExporting] = useState(false)
   const [contactDrawerOpen, setContactDrawerOpen] = useState(false)
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false)
+  const [aiDrawerOpen, setAiDrawerOpen] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -102,6 +106,22 @@ export default function App() {
 
   const handleClearMessages = useCallback(() => {
     setMessages([])
+  }, [])
+
+  const handleInsertGenerated = useCallback((
+    rawMessages: GeneratedMessage[],
+    mode: 'replace' | 'append'
+  ) => {
+    const base = new Date()
+    base.setHours(base.getHours() - 1)
+    const newMessages = rawMessages.map((m, i) => ({
+      id: generateId(),
+      text: m.text,
+      sender: m.sender,
+      timestamp: new Date(base.getTime() + i * 90_000).toISOString(),
+    }))
+    if (mode === 'replace') setMessages(newMessages)
+    else setMessages(prev => [...prev, ...newMessages])
   }, [])
 
   const handleEditMessage = useCallback((id: string, newText: string) => {
@@ -164,6 +184,7 @@ export default function App() {
   useEffect(() => () => { if (avatarUrl?.startsWith('blob:')) URL.revokeObjectURL(avatarUrl) }, [avatarUrl])
 
   return (
+    <>
     <div className="flex flex-col h-dvh w-screen overflow-hidden">
 
       {/* Mobile top bar */}
@@ -187,7 +208,7 @@ export default function App() {
             variant="custom"
             onClick={() => setMobileSettingsOpen(true)}
             aria-label="Open settings"
-            className={`size-10 rounded-xl flex items-center justify-center ${colorMode === 'dark' ? 'text-white/70' : 'text-black/60'}`}
+            className={`size-10 rounded-xl ${colorMode === 'dark' ? 'text-white/70' : 'text-black/60'}`}
           >
             <i className="ri-settings-3-line text-base text-xl" aria-hidden="true" />
           </Button>
@@ -197,7 +218,7 @@ export default function App() {
             onMouseEnter={preloadExport}
             onFocus={preloadExport}
             disabled={isExporting}
-            className="h-9 px-3 rounded-xl text-sm font-bold text-white flex items-center gap-1.5"
+            className="h-9 px-3 rounded-xl font-bold text-white gap-1.5"
             style={{ backgroundColor: isExporting ? undefined : accentColor, cursor: isExporting ? 'wait' : 'pointer' }}
           >
             <i className="ri-download-2-line" aria-hidden="true" />
@@ -228,7 +249,7 @@ export default function App() {
                     key={p}
                     variant="custom"
                     onClick={() => handleSetPlatform(p)}
-                    className={`flex flex-col items-center gap-0.5 w-14 h-auto py-2 rounded-lg transition-all duration-150 ${!isActive ? (colorMode === 'dark' ? 'text-white/60' : 'text-black/55') : ''}`}
+                    className={`flex flex-col gap-0.5 w-14 h-auto py-2 rounded-lg duration-150 ${!isActive ? (colorMode === 'dark' ? 'text-white/60' : 'text-black/55') : ''}`}
                     style={isActive ? { color: (p === 'whatsapp' && colorMode === 'light') ? '#065f46' : pColor, backgroundColor: `${pColor}18` } : undefined}
                   >
                     <i className={`${PLATFORM_ICONS[p]} text-base`} aria-hidden="true" />
@@ -251,7 +272,7 @@ export default function App() {
                   key={mode}
                   variant="custom"
                   onClick={() => setColorMode(mode)}
-                  className={`flex flex-col items-center gap-0.5 w-14 h-auto py-2 rounded-lg transition-all duration-150 ${
+                  className={`flex flex-col gap-0.5 w-14 h-auto py-2 rounded-lg duration-150 ${
                     colorMode === mode
                       ? colorMode === 'dark' ? 'text-white bg-white/10' : 'text-slate-900 bg-black/10'
                       : colorMode === 'dark' ? 'text-white/60' : 'text-black/55'
@@ -266,10 +287,21 @@ export default function App() {
               <Button
                 variant="custom"
                 onClick={() => setContactDrawerOpen(true)}
-                className={`flex flex-col items-center gap-0.5 w-14 h-auto py-2 rounded-lg opacity-60 hover:opacity-90 transition-opacity ${colorMode === 'dark' ? 'text-white' : 'text-black'}`}
+                className={`flex flex-col gap-0.5 w-14 h-auto py-2 rounded-lg opacity-60 hover:opacity-90 ${colorMode === 'dark' ? 'text-white' : 'text-black'}`}
               >
                 <i className="ri-user-line text-base" aria-hidden="true" />
                 <span className="text-xs font-medium leading-none">Recipient</span>
+              </Button>
+
+              {/* AI Generate */}
+              <Button
+                variant="custom"
+                onClick={() => setAiDrawerOpen(true)}
+                className={`flex flex-col gap-0.5 w-14 h-auto py-2 rounded-lg duration-150`}
+                style={{ color: accentTextColor }}
+              >
+                <i className="ri-sparkling-2-line text-base" aria-hidden="true" />
+                <span className="text-xs font-medium leading-none">AI Generate</span>
               </Button>
             </div>
 
@@ -280,7 +312,7 @@ export default function App() {
               onMouseEnter={preloadExport}
               onFocus={preloadExport}
               disabled={isExporting}
-              className={`flex flex-col items-center gap-0.5 w-14 h-auto py-2 rounded-lg transition-all duration-150 ${isExporting ? (colorMode === 'dark' ? 'text-white/50' : 'text-black/50') : ''}`}
+              className={`flex flex-col gap-0.5 w-14 h-auto py-2 rounded-lg duration-150 ${isExporting ? (colorMode === 'dark' ? 'text-white/50' : 'text-black/50') : ''}`}
               style={{
                 cursor: isExporting ? 'wait' : 'pointer',
                 color: isExporting ? undefined : accentTextColor,
@@ -349,11 +381,11 @@ export default function App() {
                     {role === 'them' ? 'Received' : 'Sent'}
                   </Button>
                 ))}
-                <Button
+<Button
                   variant="custom"
                   onClick={handleClearMessages}
                   disabled={messages.length === 0}
-                  className={`ml-auto px-3 py-1 h-auto rounded-lg text-xs font-semibold border transition-colors ${
+                  className={`ml-auto px-3 py-1 h-auto rounded-lg text-xs font-semibold border ${
                     messages.length === 0
                       ? colorMode === 'dark' ? 'border-white/15 text-white/25' : 'border-black/10 text-black/25'
                       : colorMode === 'dark' ? 'border-red-500/40 text-red-400 hover:bg-red-500/10' : 'border-red-400/40 text-red-500 hover:bg-red-50'
@@ -537,7 +569,7 @@ export default function App() {
             <Button
               variant="custom"
               onClick={() => setContactDrawerOpen(false)}
-              className="w-full py-3 h-auto rounded-xl text-sm font-bold text-white"
+              className="w-full py-3 h-auto rounded-xl font-bold text-white"
               style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`, fontFamily: 'inherit' }}
             >
               Save
@@ -546,5 +578,15 @@ export default function App() {
         </DrawerContent>
       </Drawer>
     </div>
+    <HomeLanding accentColor={accentColor} background={theme.chatBg} colorMode={colorMode} />
+    <AiGenerateDrawer
+      open={aiDrawerOpen}
+      onOpenChange={setAiDrawerOpen}
+      platform={platform}
+      contactName={contactName}
+      accentColor={accentColor}
+      onInsert={handleInsertGenerated}
+    />
+    </>
   )
 }
