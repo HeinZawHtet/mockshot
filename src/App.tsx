@@ -12,6 +12,7 @@ import { generateId, getAvatarColor, getInitials } from './utils/helpers'
 import { getSeedMessages } from './data/seed-messages'
 import { exportAsPng, preloadExport } from './utils/export'
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import logoSvg from './assets/logo.svg'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { HomeLanding } from '@/components/home-landing'
@@ -146,7 +147,10 @@ export default function App() {
   }, [])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key !== 'Enter') return
+    const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+    if (isMobile) return
+    if (!e.shiftKey) {
       e.preventDefault()
       handleAddMessage()
     }
@@ -413,16 +417,16 @@ export default function App() {
 
               {/* Input + send */}
               <div className="flex gap-2 items-end">
-                <textarea
+                <Textarea
                   ref={textareaRef}
                   value={inputText}
                   onChange={e => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Type a message…"
                   rows={2}
-                  className={`flex-1 resize-none rounded-xl px-3 py-2 text-sm outline-none leading-relaxed ${colorMode === 'dark'
-                      ? 'border border-white/35 bg-white/10 text-slate-100 placeholder:text-white/40'
-                      : 'border border-black/20 bg-white/65 text-slate-950 placeholder:text-black/40'
+                  className={`flex-1 min-h-0 resize-none rounded-xl px-3 py-2 leading-relaxed ${colorMode === 'dark'
+                      ? 'border-white/35 bg-white/10 text-slate-100 placeholder:text-white/40'
+                      : 'border-black/20 bg-white/65 text-slate-950 placeholder:text-black/40'
                     }`}
                   style={{ fontFamily: 'inherit' }}
                 />
@@ -576,7 +580,7 @@ export default function App() {
               onChange={e => setContactName(e.target.value)}
               placeholder="Enter recipient's name…"
               autoFocus
-              className="w-full rounded-xl px-4 py-3 text-sm outline-none border border-black/15 bg-black/5 text-slate-950 placeholder:text-black/35"
+              className="w-full rounded-xl px-4 py-3 text-base outline-none border border-black/15 bg-black/5 text-slate-950 placeholder:text-black/35"
               style={{ fontFamily: 'inherit' }}
               onKeyDown={e => { if (e.key === 'Enter') setContactDrawerOpen(false) }}
             />

@@ -5,7 +5,7 @@ export const whatsAppDark: ChatTheme = {
   colorMode: 'dark',
   chatBg: '#0B141A',
   fontFamily: '-apple-system, "Helvetica Neue", Helvetica, sans-serif',
-  fontSize: '14.2px',
+  fontSize: '16px',
   bubble: {
     sentBg: '#005C4B',
     receivedBg: '#202C33',
@@ -41,7 +41,7 @@ export const whatsAppLight: ChatTheme = {
   colorMode: 'light',
   chatBg: '#E5DDD5',
   fontFamily: '-apple-system, "Helvetica Neue", Helvetica, sans-serif',
-  fontSize: '14.2px',
+  fontSize: '16px',
   bubble: {
     sentBg: '#D9FDD3',
     receivedBg: '#FFFFFF',

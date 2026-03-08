@@ -28,6 +28,7 @@
     @apply bg-background text-foreground;
   }
 
+
   /* Scrollbar styling */
   ::-webkit-scrollbar {
     width: 4px;

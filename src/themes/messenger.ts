@@ -5,7 +5,7 @@ export const messengerLight: ChatTheme = {
   colorMode: 'light',
   chatBg: '#FFFFFF',
   fontFamily: '"Helvetica Neue", system-ui, sans-serif',
-  fontSize: '14px',
+  fontSize: '16px',
   bubble: {
     sentBg: '#0084FF',
     receivedBg: '#F0F0F0',
