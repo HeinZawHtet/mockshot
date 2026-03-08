@@ -178,6 +178,7 @@ export function ChatBubble({
       {/* Emoji picker popup — appears above bubble */}
       {showPicker && onReact && (
         <div
+          className="export-hide"
           style={{
             position: 'absolute',
             top: 0,
@@ -468,6 +469,7 @@ export function ChatBubble({
       {/* Hover actions: react + edit + delete */}
       {showActions && (
         <div
+          className="export-hide"
           style={{
             position: 'absolute',
             top: '50%',
