@@ -510,6 +510,14 @@ export default function App() {
               </div>
               <i className="ri-arrow-right-s-line text-black/30 ml-auto" aria-hidden="true" />
             </button>
+            {/* About Us — mobile only */}
+            <Link
+              to="/about"
+              onClick={() => setMobileSettingsOpen(false)}
+              className="text-sm text-black/50 hover:text-black/70 underline underline-offset-2 text-center"
+            >
+              About Us
+            </Link>
           </div>
         </DrawerContent>
       </Drawer>
@@ -595,7 +603,7 @@ export default function App() {
         </DrawerContent>
       </Drawer>
     </div>
-    <Button variant="link" size="sm" className={`fixed top-4 right-4 z-50 ${colorMode === 'dark' ? 'text-white/50 hover:text-white' : 'text-black/40 hover:text-black'}`} asChild>
+    <Button variant="link" size="sm" className={`hidden md:inline-flex fixed top-4 right-4 z-50 ${colorMode === 'dark' ? 'text-white/50 hover:text-white' : 'text-black/40 hover:text-black'}`} asChild>
       <Link to="/about">About</Link>
     </Button>
     <AiGenerateDrawer
