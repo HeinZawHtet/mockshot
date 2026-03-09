@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mockshot.io/sitemap.xml
+Sitemap: https://mockshot.app/sitemap.xml
