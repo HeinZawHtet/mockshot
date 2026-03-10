@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Message } from '../../../types/message'
 import type { ChatTheme } from '../../../types/theme'
 import { ChatBubble } from '../../../components/chat-bubble'
@@ -19,6 +19,11 @@ interface IMessageChatProps {
 export function IMessageChat({ messages, theme, contactName, onDeleteMessage, onEditMessage, onEditTimestamp, onReact, onAvatarClick, avatarUrl }: IMessageChatProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [editingTimestampId, setEditingTimestampId] = useState<string | null>(null)
+
+  const lastSentIndex = useMemo(
+    () => messages.reduce((acc, m, i) => (m.sender === 'me' ? i : acc), -1),
+    [messages],
+  )
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -46,9 +51,7 @@ export function IMessageChat({ messages, theme, contactName, onDeleteMessage, on
             paddingBottom: '4px',
           }}
         >
-        {(() => {
-          const lastSentIndex = messages.reduce((acc, m, i) => m.sender === 'me' ? i : acc, -1)
-          return messages.map((msg, index) => {
+        {messages.map((msg, index) => {
           const prevMsg = messages[index - 1]
           const nextMsg = messages[index + 1]
           const isLastInGroup = !nextMsg || nextMsg.sender !== msg.sender
@@ -127,8 +130,7 @@ export function IMessageChat({ messages, theme, contactName, onDeleteMessage, on
               </div>
             </div>
           )
-          })
-        })()}
+        })}
         </div>
       </div>
     </div>

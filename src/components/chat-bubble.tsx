@@ -87,10 +87,6 @@ export function ChatBubble({
   const avatarSlotWidth = theme.avatar.size + 14
 
   useEffect(() => {
-    if (!isEditing) setEditText(message.text)
-  }, [message.text, isEditing])
-
-  useEffect(() => {
     if (isEditing) {
       textareaRef.current?.focus()
       textareaRef.current?.select()
@@ -504,7 +500,7 @@ export function ChatBubble({
           )}
           {onEdit && (
             <button
-              onClick={() => setIsEditing(true)}
+              onClick={() => { setEditText(message.text); setIsEditing(true) }}
               style={{
                 background: 'rgba(0,0,0,0.35)',
                 border: 'none',

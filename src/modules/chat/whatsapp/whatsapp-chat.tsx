@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Message } from '../../../types/message'
 import type { ChatTheme } from '../../../types/theme'
 import { ChatBubble } from '../../../components/chat-bubble'
@@ -21,6 +21,11 @@ interface WhatsAppChatProps {
 export function WhatsAppChat({ messages, theme, contactName, onDeleteMessage, onEditMessage, onEditTimestamp, onReact, onAvatarClick, avatarUrl }: WhatsAppChatProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [editingTimestampId, setEditingTimestampId] = useState<string | null>(null)
+
+  const lastSentIndex = useMemo(
+    () => messages.reduce((acc, m, i) => (m.sender === 'me' ? i : acc), -1),
+    [messages],
+  )
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -64,9 +69,7 @@ export function WhatsAppChat({ messages, theme, contactName, onDeleteMessage, on
             paddingBottom: '4px',
           }}
         >
-          {(() => {
-            const lastSentIndex = messages.reduce((acc, m, i) => m.sender === 'me' ? i : acc, -1)
-            return messages.map((msg, index) => {
+          {messages.map((msg, index) => {
             const prevMsg = messages[index - 1]
             const nextMsg = messages[index + 1]
             const isLastInGroup = !nextMsg || nextMsg.sender !== msg.sender
@@ -140,17 +143,16 @@ export function WhatsAppChat({ messages, theme, contactName, onDeleteMessage, on
                     isLastSentMessage={isLastSentMessage}
                     contactName={contactName}
                     onDelete={onDeleteMessage ? () => onDeleteMessage(msg.id) : undefined}
-                  onEdit={onEditMessage ? (newText) => onEditMessage(msg.id, newText) : undefined}
-                  onEditTimestamp={onEditTimestamp ? (ts) => onEditTimestamp(msg.id, ts) : undefined}
-                  onReact={onReact ? (emoji) => onReact(msg.id, emoji) : undefined}
-                  onAvatarClick={onAvatarClick}
-                  avatarUrl={avatarUrl}
+                    onEdit={onEditMessage ? (newText) => onEditMessage(msg.id, newText) : undefined}
+                    onEditTimestamp={onEditTimestamp ? (ts) => onEditTimestamp(msg.id, ts) : undefined}
+                    onReact={onReact ? (emoji) => onReact(msg.id, emoji) : undefined}
+                    onAvatarClick={onAvatarClick}
+                    avatarUrl={avatarUrl}
                   />
                 </div>
               </div>
             )
-            })
-          })()}
+          })}
         </div>
       </div>
     </div>
