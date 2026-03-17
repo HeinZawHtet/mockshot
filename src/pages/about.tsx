@@ -266,7 +266,7 @@ export default function AboutPage() {
       {/* Footer */}
       <footer className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between gap-4">
         <span className="text-sm font-bold text-slate-900">MockShot</span>
-        <p className="text-xs text-slate-300">Free fake chat screenshot generator. No sign-up required.</p>
+        <Link to="/contact" className="text-xs text-slate-400 hover:text-slate-700 transition-colors">Contact</Link>
       </footer>
 
     </div>

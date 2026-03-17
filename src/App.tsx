@@ -710,14 +710,23 @@ export default function App() {
                   aria-hidden="true"
                 />
               </button>
-              {/* About Us — mobile only */}
-              <Link
-                to="/about"
-                onClick={() => setMobileSettingsOpen(false)}
-                className="text-sm text-black/50 hover:text-black/70 underline underline-offset-2 text-center"
-              >
-                About Us
-              </Link>
+              {/* About Us + Contact — mobile only */}
+              <div className="flex items-center justify-center gap-4">
+                <Link
+                  to="/about"
+                  onClick={() => setMobileSettingsOpen(false)}
+                  className="text-sm text-black/50 hover:text-black/70 underline underline-offset-2"
+                >
+                  About Us
+                </Link>
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileSettingsOpen(false)}
+                  className="text-sm text-black/50 hover:text-black/70 underline underline-offset-2"
+                >
+                  Contact
+                </Link>
+              </div>
             </div>
           </DrawerContent>
         </Drawer>
@@ -819,14 +828,24 @@ export default function App() {
           </DrawerContent>
         </Drawer>
       </div>
-      <Button
-        variant="link"
-        size="sm"
-        className={`hidden md:inline-flex fixed top-4 right-4 z-50 ${colorMode === "dark" ? "text-white/50 hover:text-white" : "text-black/40 hover:text-black"}`}
-        asChild
-      >
-        <Link to="/about">About</Link>
-      </Button>
+      <div className="hidden md:flex fixed top-4 right-4 z-50 items-center gap-3">
+        <Button
+          variant="link"
+          size="sm"
+          className={`${colorMode === "dark" ? "text-white/50 hover:text-white" : "text-black/40 hover:text-black"}`}
+          asChild
+        >
+          <Link to="/about">About</Link>
+        </Button>
+        <Button
+          variant="link"
+          size="sm"
+          className={`${colorMode === "dark" ? "text-white/50 hover:text-white" : "text-black/40 hover:text-black"}`}
+          asChild
+        >
+          <Link to="/contact">Contact</Link>
+        </Button>
+      </div>
       <AiGenerateDrawer
         open={aiDrawerOpen}
         onOpenChange={setAiDrawerOpen}
