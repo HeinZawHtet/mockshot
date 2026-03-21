@@ -1,73 +1,105 @@
-# React + TypeScript + Vite
+# MockShot
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Generate realistic fake chat screenshots for iMessage, WhatsApp, and Facebook Messenger. Build conversations visually and export as PNG - no sign-up required.
 
-Currently, two official plugins are available:
+**Live:** [mockshot.io](https://mockshot.io)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- iMessage, WhatsApp, and Messenger screenshot generation
+- Light and dark mode for each platform
+- Customize contact name and avatar
+- Edit messages, timestamps, and reactions
+- AI-generated conversations (Anthropic or OpenAI)
+- Export as high-quality PNG (retina 2x)
+- Fully static - no backend required
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Layer      | Tech                              |
+|------------|-----------------------------------|
+| Framework  | React 19 + TypeScript (strict)    |
+| Build / SSG | Vite 7 + vite-react-ssg          |
+| Styling    | Tailwind CSS v4                   |
+| UI         | shadcn/ui v3                      |
+| Export     | html-to-image                     |
+| AI         | Vercel AI SDK (Anthropic / OpenAI)|
+| Hosting    | Cloudflare Pages                  |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Getting Started
+
+**Prerequisites:** Node 18+, npm
+
+```bash
+git clone https://github.com/heinafk/mockshot.git
+cd mockshot
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment (optional — AI features only)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.save .env
 ```
+
+| Variable    | Description                                          |
+|-------------|------------------------------------------------------|
+| `AI_API_KEY` | Anthropic or OpenAI API key                         |
+| `AI_MODEL`  | Model ID (e.g. `anthropic/claude-haiku-4-5-20251001`) |
+
+### Dev server
+
+```bash
+npm run dev       # http://localhost:5173
+```
+
+### Build
+
+```bash
+npm run build     # TypeScript check + SSG → dist/
+npm run preview   # Preview dist/ locally
+npm run lint      # ESLint
+```
+
+---
+
+## Project Structure
+
+```
+src/
+  components/       # Shared UI (chat-bubble, phone-frame, drawers, etc.)
+  contexts/         # ThemeContext
+  hooks/            # useAppState
+  modules/chat/     # Per-platform chat views (imessage, whatsapp, messenger)
+  themes/           # ChatTheme objects per platform
+  types/            # TypeScript interfaces (Message, ChatTheme, etc.)
+  utils/            # export.ts, ai.ts, ai-storage.ts, helpers.ts
+  pages/            # Static pages (about.tsx)
+  data/             # Seed messages for demo
+  App.tsx           # Root component
+  routes.tsx        # React Router routes + SSG path registration
+```
+
+---
+
+## Platforms
+
+| Platform   | Accent      | Modes       |
+|------------|-------------|-------------|
+| iMessage   | `#2B7EFB`   | Light/Dark  |
+| WhatsApp   | `#25D366`   | Light/Dark  |
+| Messenger  | `#0084FF`   | Light/Dark  |
+
+All platforms render inside a fixed 390×844px iPhone 14 frame.
+
+---
+
+## Deployment
+
+`npm run build` outputs a fully static `dist/` — no Node.js server needed. Deployed on Cloudflare Pages. `public/_redirects` provides an SPA fallback for client-side routing.
