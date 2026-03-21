@@ -17,6 +17,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { GeneratedMessage } from "@/types/ai";
 import type { Platform } from "@/types/theme";
 import { generateConversation } from "@/utils/ai";
+import { trackAiGenerate } from "@/utils/analytics";
 import {
   getCustomConfig,
   saveCustomConfig,
@@ -109,6 +110,7 @@ export function AiGenerateDrawer({
           contactName,
         });
         onInsert(messages, insertMode);
+        trackAiGenerate(platform, formData.get("scenario") as string, insertMode);
         setUsageCount(getUsageCount());
         onOpenChange(false);
         return null;

@@ -40,7 +40,7 @@ export default function App() {
                 platform={s.platform}
                 isExporting={s.isExporting}
                 onSetPlatform={s.handleSetPlatform}
-                onSetColorMode={s.setColorMode}
+                onSetColorMode={s.handleSetColorMode}
                 onOpenContact={() => s.setContactDrawerOpen(true)}
                 onAiGenerate={() => s.setAiDrawerOpen(true)}
                 onExport={s.handleExport}
@@ -141,7 +141,7 @@ export default function App() {
             colorMode={s.colorMode}
             contactName={s.contactName}
             onSetPlatform={s.handleSetPlatform}
-            onSetColorMode={s.setColorMode}
+            onSetColorMode={s.handleSetColorMode}
             onOpenContact={() => s.setContactDrawerOpen(true)}
           />
 
@@ -152,7 +152,7 @@ export default function App() {
             avatarUrl={s.avatarUrl}
             onContactNameChange={s.setContactName}
             onAvatarFileChange={s.handleAvatarFileChange}
-            onRemoveAvatar={() => s.setAvatarUrl(null)}
+            onRemoveAvatar={s.handleRemoveAvatar}
           />
         </div>
 

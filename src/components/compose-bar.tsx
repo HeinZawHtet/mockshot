@@ -86,7 +86,7 @@ export function ComposeBar({
           onClick={onAddMessage}
           disabled={!inputText.trim()}
           aria-label="Add message"
-          className="flex"
+          className="flex size-11"
         >
           <i className="ri-arrow-up-line text-base" aria-hidden="true" />
         </Button>

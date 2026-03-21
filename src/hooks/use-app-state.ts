@@ -9,6 +9,16 @@ import { messagesReducer } from "../utils/messages-reducer";
 import { getSeedMessages } from "../data/seed-messages";
 import { exportAsPng } from "../utils/export";
 import { PLATFORM_COLORS } from "../platforms";
+import {
+  trackPlatformSwitch,
+  trackColorModeToggle,
+  trackMessageSent,
+  trackExport,
+  trackAvatarUpload,
+  trackAvatarRemove,
+  trackClearMessages,
+  trackReaction,
+} from "../utils/analytics";
 import type { GeneratedMessage } from "../types/ai";
 
 const PLATFORM_META: Record<
@@ -82,13 +92,17 @@ export function useAppState() {
       sender: senderRole,
       timestamp: new Date().toISOString(),
     });
+    trackMessageSent(platform, senderRole);
     setInputText("");
     textareaRef.current?.focus();
-  }, [inputText, senderRole]);
+  }, [inputText, senderRole, platform]);
 
   const handleDeleteMessage = (id: string) => dispatch({ type: "DELETE", id });
 
-  const handleClearMessages = () => dispatch({ type: "CLEAR" });
+  const handleClearMessages = () => {
+    dispatch({ type: "CLEAR" });
+    trackClearMessages();
+  };
 
   const handleInsertGenerated = (
     rawMessages: GeneratedMessage[],
@@ -111,8 +125,10 @@ export function useAppState() {
   const handleEditTimestamp = (id: string, timestamp: string) =>
     dispatch({ type: "EDIT_TIMESTAMP", id, timestamp });
 
-  const handleToggleReaction = (id: string, emoji: string) =>
+  const handleToggleReaction = (id: string, emoji: string) => {
     dispatch({ type: "TOGGLE_REACTION", id, emoji });
+    trackReaction(emoji);
+  };
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -132,6 +148,7 @@ export function useAppState() {
   const handleExport = useCallback(() => {
     startExport(async () => {
       await exportAsPng("phone-frame", `mockshot-${platform}-${colorMode}`);
+      trackExport(platform, colorMode);
     });
   }, [platform, colorMode]);
 
@@ -145,18 +162,30 @@ export function useAppState() {
           setAvatarUrl(ev.target.result);
       };
       reader.readAsDataURL(file);
+      trackAvatarUpload();
       e.target.value = "";
     },
     [],
   );
 
+  const handleRemoveAvatar = useCallback(() => {
+    setAvatarUrl(null);
+    trackAvatarRemove();
+  }, []);
+
   const handleSetPlatform = useCallback(
     (p: Platform) => {
       setPlatform(p);
       navigate(`/${p}`, { replace: true });
+      trackPlatformSwitch(p);
     },
     [navigate],
   );
+
+  const handleSetColorMode = useCallback((mode: ColorMode) => {
+    setColorMode(mode);
+    trackColorModeToggle(mode);
+  }, []);
 
   const isRoot = location.pathname === "/" || location.pathname === "";
   const pageTitle = isRoot
@@ -194,7 +223,9 @@ export function useAppState() {
     handleKeyDown,
     handleExport,
     handleAvatarFileChange,
+    handleRemoveAvatar,
     handleSetPlatform,
+    handleSetColorMode,
     setColorMode,
     setContactName,
     setInputText,
