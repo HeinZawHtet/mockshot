@@ -1,17 +1,23 @@
-import { useRef } from 'react'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { Button } from '@/components/ui/button'
-import { getAvatarColor, getInitials } from '../utils/helpers'
+import { useRef } from "react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { getAvatarColor, getInitials } from "../utils/helpers";
+import { useTheme } from "@/contexts/theme-context";
 
 interface ContactDrawerProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  contactName: string
-  avatarUrl: string | null
-  accentColor: string
-  onContactNameChange: (name: string) => void
-  onAvatarFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onRemoveAvatar: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  contactName: string;
+  avatarUrl: string | null;
+  onContactNameChange: (name: string) => void;
+  onAvatarFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveAvatar: () => void;
 }
 
 export function ContactDrawer({
@@ -19,12 +25,12 @@ export function ContactDrawer({
   onOpenChange,
   contactName,
   avatarUrl,
-  accentColor,
   onContactNameChange,
   onAvatarFileChange,
   onRemoveAvatar,
 }: ContactDrawerProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { accentColor } = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -35,44 +41,61 @@ export function ContactDrawer({
         <div className="px-4 pb-8 flex flex-col gap-4 w-full max-w-sm mx-auto">
           {/* Avatar preview + upload */}
           <div className="flex flex-col items-center gap-2">
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => fileInputRef.current?.click()}
-              className="relative group focus:outline-none"
+              className="relative group p-0 h-auto w-auto rounded-full hover:bg-transparent"
               aria-label="Upload profile photo"
             >
               <div
                 className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden text-white text-2xl font-bold select-none"
-                style={{ backgroundColor: avatarUrl ? 'transparent' : getAvatarColor(contactName) }}
+                style={{
+                  backgroundColor: avatarUrl
+                    ? "transparent"
+                    : getAvatarColor(contactName),
+                }}
               >
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt={contactName} className="w-full h-full object-cover" />
+                  <img
+                    src={avatarUrl}
+                    alt={contactName}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   getInitials(contactName)
                 )}
               </div>
               <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
-                <i className="ri-camera-line text-white text-xl" aria-hidden="true" />
+                <i
+                  className="ri-camera-line text-white text-xl"
+                  aria-hidden="true"
+                />
               </div>
-            </button>
+            </Button>
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => fileInputRef.current?.click()}
-                className="text-xs font-medium text-black/50 hover:text-black/70 transition-colors"
+                size="xs"
               >
                 Upload photo
-              </button>
+              </Button>
               {avatarUrl && (
                 <>
                   <span className="text-black/20">·</span>
-                  <button
+                  <Button
                     type="button"
+                    size="xs"
+                    variant="link"
+                    style={{
+                      color: "var(--destructive)",
+                    }}
                     onClick={onRemoveAvatar}
-                    className="text-xs font-medium text-red-400 hover:text-red-500 transition-colors"
                   >
                     Remove
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -85,31 +108,22 @@ export function ContactDrawer({
             />
           </div>
           {/* Name input */}
-          <input
+          <Input
             type="text"
             value={contactName}
             onChange={(e) => onContactNameChange(e.target.value)}
             placeholder="Enter recipient's name…"
             autoFocus
-            className="w-full rounded-xl px-4 py-3 text-base outline-none border border-black/15 bg-black/5 text-slate-950 placeholder:text-black/35"
-            style={{ fontFamily: 'inherit' }}
+            style={{ fontFamily: "inherit" }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') onOpenChange(false)
+              if (e.key === "Enter") onOpenChange(false);
             }}
           />
-          <Button
-            variant="custom"
-            onClick={() => onOpenChange(false)}
-            className="w-full py-3 h-auto rounded-xl font-bold text-white"
-            style={{
-              background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`,
-              fontFamily: 'inherit',
-            }}
-          >
+          <Button variant="default" onClick={() => onOpenChange(false)}>
             Save
           </Button>
         </div>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }

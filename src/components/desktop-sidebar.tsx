@@ -1,13 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { preloadExport } from '../utils/export'
 import { PLATFORMS, PLATFORM_LABELS, PLATFORM_COLORS, PLATFORM_ICONS } from '../platforms'
-import type { ChatTheme, ColorMode, Platform } from '../types/theme'
+import type { ColorMode, Platform } from '../types/theme'
+import { useTheme } from '@/contexts/theme-context'
 
 interface DesktopSidebarProps {
   platform: Platform
-  colorMode: ColorMode
-  theme: ChatTheme
-  accentTextColor: string
   isExporting: boolean
   onSetPlatform: (p: Platform) => void
   onSetColorMode: (m: ColorMode) => void
@@ -18,9 +16,6 @@ interface DesktopSidebarProps {
 
 export function DesktopSidebar({
   platform,
-  colorMode,
-  theme,
-  accentTextColor,
   isExporting,
   onSetPlatform,
   onSetColorMode,
@@ -28,6 +23,7 @@ export function DesktopSidebar({
   onAiGenerate,
   onExport,
 }: DesktopSidebarProps) {
+  const { colorMode, theme, accentTextColor } = useTheme()
   return (
     <div
       className={`hidden md:flex flex-col items-center py-3 w-18 shrink-0 border-r ${colorMode === 'dark' ? 'border-white/10' : 'border-black/10'}`}

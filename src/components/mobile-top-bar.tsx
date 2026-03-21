@@ -1,29 +1,17 @@
 import { Button } from '@/components/ui/button'
 import { preloadExport } from '../utils/export'
-import type { ChatTheme, ColorMode } from '../types/theme'
+import { useTheme } from '@/contexts/theme-context'
 import logoSvg from '../assets/logo.svg'
 
 interface MobileTopBarProps {
-  colorMode: ColorMode
-  theme: ChatTheme
-  accentColor: string
-  accentTextColor: string
   isExporting: boolean
   onAiGenerate: () => void
   onSettings: () => void
   onExport: () => void
 }
 
-export function MobileTopBar({
-  colorMode,
-  theme,
-  accentColor,
-  accentTextColor,
-  isExporting,
-  onAiGenerate,
-  onSettings,
-  onExport,
-}: MobileTopBarProps) {
+export function MobileTopBar({ isExporting, onAiGenerate, onSettings, onExport }: MobileTopBarProps) {
+  const { colorMode, theme, accentColor, accentTextColor } = useTheme()
   return (
     <div
       className={`md:hidden shrink-0 flex items-center justify-between px-3 border-b ${colorMode === 'dark' ? 'border-white/10' : 'border-black/10'}`}

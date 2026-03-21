@@ -30,27 +30,9 @@ export function IMessageChat({ messages, theme, contactName, onDeleteMessage, on
   }, [messages.length])
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: theme.chatBg,
-        overflow: 'hidden',
-      }}
-    >
-      <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto' }}>
-        <div
-          style={{
-            minHeight: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            paddingTop: '8px',
-            paddingBottom: '4px',
-          }}
-        >
+    <div className="w-full h-full flex flex-col overflow-hidden" style={{ backgroundColor: theme.chatBg }}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        <div className="min-h-full flex flex-col justify-end pt-2 pb-1">
         {messages.map((msg, index) => {
           const prevMsg = messages[index - 1]
           const nextMsg = messages[index + 1]

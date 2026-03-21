@@ -1,9 +1,25 @@
 import { useState, useRef, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import type { ChatTheme } from '../types/theme'
 import type { Message } from '../types/message'
 import { formatTime, getInitials, getAvatarColor, getTimeValue, applyTimeToTimestamp } from '../utils/helpers'
 
 const REACTION_EMOJIS = ['❤️', '😂', '😮', '😢', '👍', '👎']
+
+const ACTION_BTN: React.CSSProperties = {
+  background: 'rgba(0,0,0,0.35)',
+  border: 'none',
+  borderRadius: '50%',
+  width: '22px',
+  height: '22px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  color: '#fff',
+  fontSize: '11px',
+  flexShrink: 0,
+}
 
 interface ChatBubbleProps {
   message: Message
@@ -85,13 +101,6 @@ export function ChatBubble({
   }
 
   const avatarSlotWidth = theme.avatar.size + 14
-
-  useEffect(() => {
-    if (isEditing) {
-      textareaRef.current?.focus()
-      textareaRef.current?.select()
-    }
-  }, [isEditing])
 
   // Close picker on outside pointer event
   useEffect(() => {
@@ -479,20 +488,7 @@ export function ChatBubble({
           {onReact && (
             <button
               onPointerDown={e => { e.stopPropagation(); setShowPicker(p => !p) }}
-              style={{
-                background: showPicker ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.35)',
-                border: 'none',
-                borderRadius: '50%',
-                width: '22px',
-                height: '22px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: '#fff',
-                fontSize: '11px',
-                flexShrink: 0,
-              }}
+              style={showPicker ? { ...ACTION_BTN, background: 'rgba(0,0,0,0.5)' } : ACTION_BTN}
               aria-label="React to message"
             >
               <i className="ri-emotion-line" />
@@ -500,21 +496,13 @@ export function ChatBubble({
           )}
           {onEdit && (
             <button
-              onClick={() => { setEditText(message.text); setIsEditing(true) }}
-              style={{
-                background: 'rgba(0,0,0,0.35)',
-                border: 'none',
-                borderRadius: '50%',
-                width: '22px',
-                height: '22px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: '#fff',
-                fontSize: '11px',
-                flexShrink: 0,
+              onClick={() => {
+                setEditText(message.text)
+                flushSync(() => setIsEditing(true))
+                textareaRef.current?.focus()
+                textareaRef.current?.select()
               }}
+              style={ACTION_BTN}
               aria-label="Edit message"
             >
               <i className="ri-edit-line" />
@@ -523,20 +511,7 @@ export function ChatBubble({
           {onDelete && (
             <button
               onClick={onDelete}
-              style={{
-                background: 'rgba(0,0,0,0.35)',
-                border: 'none',
-                borderRadius: '50%',
-                width: '22px',
-                height: '22px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: '#fff',
-                fontSize: '11px',
-                flexShrink: 0,
-              }}
+              style={ACTION_BTN}
               aria-label="Delete message"
             >
               <i className="ri-delete-bin-line" />

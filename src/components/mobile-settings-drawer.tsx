@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
 import { PLATFORMS, PLATFORM_LABELS, PLATFORM_COLORS, PLATFORM_ICONS } from '../platforms'
 import type { ColorMode, Platform } from '../types/theme'
 
@@ -39,10 +40,11 @@ export function MobileSettingsDrawer({
                 const isActive = platform === p
                 const pColor = PLATFORM_COLORS[p]
                 return (
-                  <button
+                  <Button
                     key={p}
+                    variant="ghost"
                     onClick={() => onSetPlatform(p)}
-                    className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border transition-all"
+                    className="flex-1 flex-col gap-1.5 py-3 h-auto rounded-xl border hover:bg-transparent"
                     style={
                       isActive
                         ? { borderColor: pColor, backgroundColor: `${pColor}12`, color: pColor }
@@ -51,7 +53,7 @@ export function MobileSettingsDrawer({
                   >
                     <i className={`${PLATFORM_ICONS[p]} text-lg`} aria-hidden="true" />
                     <span className="text-xs font-medium leading-none">{PLATFORM_LABELS[p]}</span>
-                  </button>
+                  </Button>
                 )
               })}
             </div>
@@ -61,24 +63,26 @@ export function MobileSettingsDrawer({
             <p className="text-xs font-semibold uppercase tracking-wide text-black/40 mb-2">Theme</p>
             <div className="flex gap-2">
               {(['dark', 'light'] as ColorMode[]).map((mode) => (
-                <button
+                <Button
                   key={mode}
+                  variant="ghost"
                   onClick={() => onSetColorMode(mode)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition-all ${colorMode === mode ? 'border-black/20 bg-black/5 text-black' : 'border-black/10 text-black/50'}`}
+                  className={`flex-1 py-2.5 h-auto rounded-xl border ${colorMode === mode ? 'border-black/20 bg-black/5 text-black' : 'border-black/10 text-black/50'}`}
                 >
                   <i className={mode === 'dark' ? 'ri-moon-line' : 'ri-sun-line'} aria-hidden="true" />
                   {mode === 'dark' ? 'Dark' : 'Light'}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
           {/* Recipient */}
-          <button
+          <Button
+            variant="ghost"
             onClick={() => {
               onOpenChange(false)
               setTimeout(() => onOpenContact(), 300)
             }}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl border border-black/10"
+            className="w-full justify-start gap-3 px-4 py-3 h-auto rounded-xl border border-black/10 hover:bg-black/5"
           >
             <i className="ri-user-line text-base text-black/50" aria-hidden="true" />
             <div className="flex flex-col items-start">
@@ -86,7 +90,7 @@ export function MobileSettingsDrawer({
               <span className="text-sm font-medium text-black/80">{contactName}</span>
             </div>
             <i className="ri-arrow-right-s-line text-black/30 ml-auto" aria-hidden="true" />
-          </button>
+          </Button>
           {/* About Us */}
           <Link
             to="/about"
