@@ -2,7 +2,7 @@
 
 Generate realistic fake chat screenshots for iMessage, WhatsApp, and Facebook Messenger. Build conversations visually and export as PNG - no sign-up required.
 
-**Live:** [mockshot.io](https://mockshot.io)
+**Live:** [mockshot.app](https://mockshot.app)
 
 ---
 
